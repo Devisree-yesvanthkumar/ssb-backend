@@ -21,33 +21,29 @@ const Contact = mongoose.model("Contact", contactSchema);
 
 const sendSMS = async (name, phone, service, message) => {
   try {
-    const smsText =
-`New Enquiry - Sri Sai Balaji Xerox
-Name: ${name}
-Phone: ${phone}
-Service: ${service}
-Message: ${message}`;
+    const smsText = `New Enquiry - Sri Sai Balaji Xerox. Name: ${name}, Phone: ${phone}, Service: ${service}, Message: ${message}`
 
-    const response = await axios.post(
-      "https://www.fast2sms.com/dev/bulkV2",
-      {
-        route: "q",
+    const response = await axios({
+      method: 'GET',
+      url: 'https://www.fast2sms.com/dev/bulkV2',
+      params: {
+        authorization: process.env.FAST2SMS_API_KEY,
+        sender_id: 'FSTSMS',
         message: smsText,
-        language: "english",
-        flash: 0,
+        language: 'english',
+        route: 'q',
         numbers: process.env.OWNER_PHONE
-      },
-      {
-        headers: {
-          authorization: process.env.FAST2SMS_API_KEY
-        }
       }
-    );
-    console.log("SMS sent successfully:", response.data);
+    })
+
+    console.log("SMS sent successfully:", response.data)
   } catch (err) {
-    console.error("SMS sending failed:", err.message);
+    console.error("SMS sending failed:", err.message)
+    if (err.response) {
+      console.error("Error details:", err.response.data)
+    }
   }
-};
+}
 // POST /api/contact
 app.post("/api/contact", async (req, res) => {
   try {
