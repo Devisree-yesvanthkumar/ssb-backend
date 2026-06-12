@@ -28,11 +28,10 @@ const sendSMS = async (name, phone, service, message) => {
       url: 'https://www.fast2sms.com/dev/bulkV2',
       params: {
         authorization: process.env.FAST2SMS_API_KEY,
-        sender_id: 'TXTIND',
         message: smsText,
         language: 'english',
-        route: 'v',
-        numbers:process.env.OWNER_PHONE
+        route: 'q',
+        numbers: process.env.OWNER_PHONE
       }
     })
 
@@ -44,6 +43,8 @@ const sendSMS = async (name, phone, service, message) => {
     }
   }
 }
+
+
 // POST /api/contact
 app.post("/api/contact", async (req, res) => {
   try {
