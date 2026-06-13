@@ -6,15 +6,11 @@ require("dotenv").config();
 
 const app = express();
 app.use(cors({
-  origin: [
-    'https://ssb-frontend-iota.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:3000'
-  ],
-  methods: ['GET', 'POST'],
-  credentials: true
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: false
 }));
-app.use(express.json());
 
 // Contact Schema
 const contactSchema = new mongoose.Schema({
