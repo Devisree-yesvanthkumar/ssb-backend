@@ -5,12 +5,20 @@ const axios = require("axios");
 require("dotenv").config();
 
 const app = express();
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: false
-}));
+
+// CORS fix
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
+app.use(cors());
+app.use(express.json());
 
 // Contact Schema
 const contactSchema = new mongoose.Schema({
@@ -48,7 +56,6 @@ const sendSMS = async (name, phone, service, message) => {
   }
 }
 
-
 // POST /api/contact
 app.post("/api/contact", async (req, res) => {
   try {
@@ -58,7 +65,6 @@ app.post("/api/contact", async (req, res) => {
     }
     const contact = new Contact({ name, phone, service, message });
     await contact.save();
-    // Send SMS to owner
     await sendSMS(name, phone, service, message);
     res.status(201).json({ success: true, message: "Enquiry saved! We'll call you back shortly." });
   } catch (err) {
@@ -78,7 +84,6 @@ app.get("/api/contact", async (req, res) => {
 });
 
 app.get("/", (req, res) => res.json({ status: "Sri Sai Balaji Xerox API running" }));
-
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/ssb_xerox";
